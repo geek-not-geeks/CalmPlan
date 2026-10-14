@@ -1,4 +1,4 @@
-# CogniSync Guardian
+# CalmPlan
 
 A task-management system that doesn't just warn you when you're burning out — it changes your schedule for you. It tracks sleep, energy, and workload, and when burnout risk crosses a threshold, it caps how much new work you can take on, locks demanding tasks until you're in better shape, and pushes deadlines back on its own instead of leaving that decision to you.
 
