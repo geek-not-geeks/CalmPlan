@@ -34,12 +34,12 @@ Out of everything I could have tracked, I picked self-reported task confidence b
 ## Running it
 
 ```
-git clone https://github.com/geek-not-geeks/cognisync_guardian.git
-cd cognisync_guardian
+git clone https://github.com/geek-not-geeks/CalmPlan.git
+cd CalmPlan
 npm install
 cp .env.example .env   # fill in your own Supabase project keys
 npm run dev
 ```
 
-Live demo: https://cognisync-guardian.akhilesh-samantaray.workers.dev/
+
 
