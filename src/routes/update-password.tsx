@@ -8,10 +8,10 @@ import { signUpSchema, formatAuthError } from "@/lib/auth";
 export const Route = createFileRoute("/update-password")({
   head: () => ({
     meta: [
-      { title: "Update Password — CogniSync" },
+      { title: "Update Password — CalmPlan" },
       {
         name: "description",
-        content: "Set a new password for your CogniSync account.",
+        content: "Set a new password for your CalmPlan account.",
       },
     ],
   }),

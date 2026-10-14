@@ -1,5 +1,5 @@
 -- Migration: Predictive Confidence-Completion Loop
--- Purpose: This migration adds the data model needed for CogniSync Guardian's
+-- Purpose: This migration adds the data model needed for CalmPlan's
 -- core research claim — that self-reported task confidence predicts actual
 -- completion, and that this relationship can inform scheduling.
 --

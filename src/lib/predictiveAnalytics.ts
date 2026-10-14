@@ -1,7 +1,7 @@
 /**
  * predictiveAnalytics.ts
  *
- * This module is the actual empirical core of CogniSync Guardian: it takes
+ * This module is the actual empirical core of CalmPlan: it takes
  * logged (confidence, completion, burnout context) observations and answers
  * two concrete questions with real statistics, not vibes:
  *

@@ -32,7 +32,7 @@ export default defineConfig(({ command }) => ({
       server: { entry: "server" },
     }),
     // nitro builds the deployable server output; only needed for `vite build`.
-    ...(command === "build" ? [nitro({ preset: "cloudflare-module" })] : []),
+    ...(command === "build" ? [nitro({ preset: "cloudflare-module", cloudflare: { wrangler: { name: "calmplan" } } })] : []),
     viteReact(),
   ],
   resolve: {

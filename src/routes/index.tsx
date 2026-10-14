@@ -5,7 +5,7 @@ import { Dashboard } from "@/components/dashboard/Dashboard";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CogniSync" },
+      { title: "CalmPlan" },
       { name: "description", content: "Your daily cognitive load and energy-aware task manger." },
     ],
   }),

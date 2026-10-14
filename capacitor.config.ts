@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.cognisync.enterprise",
-  appName: "CogniSync",
+  appId: "com.calmplan.app",
+  appName: "CalmPlan",
   webDir: "dist",
   server: {
     androidScheme: "https",

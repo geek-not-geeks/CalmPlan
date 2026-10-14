@@ -12,8 +12,8 @@ import { ForgotPasswordModal } from "@/components/auth/ForgotPasswordModal";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign In — CogniSync" },
-      { name: "description", content: "Sign in to your CogniSync account." },
+      { title: "Sign In — CalmPlan" },
+      { name: "description", content: "Sign in to your CalmPlan account." },
     ],
   }),
   component: AuthPage,
@@ -126,7 +126,7 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-5">
       <div className="w-full max-w-sm rounded-4xl bg-surface p-8 shadow-3d-base">
         <header className="mb-6 text-center">
-          <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">CogniSync</p>
+          <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">CalmPlan</p>
           <h1 className="mt-1 text-2xl font-semibold text-foreground">
             {mode === "signin" ? "Welcome back" : "Create account"}
           </h1>

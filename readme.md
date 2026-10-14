@@ -1,4 +1,4 @@
-# CogniSync Guardian
+# CalmPlan
 
 A task-management system that doesn't just warn you when you're burning out — it changes your schedule for you. It tracks sleep, energy, and workload, and when burnout risk crosses a threshold, it caps how much new work you can take on, locks demanding tasks until you're in better shape, and pushes deadlines back on its own instead of leaving that decision to you.
 
@@ -34,12 +34,12 @@ Out of everything I could have tracked, I picked self-reported task confidence b
 ## Running it
 
 ```
-git clone https://github.com/geek-not-geeks/cognisync_guardian.git
-cd cognisync_guardian
+git clone https://github.com/geek-not-geeks/CalmPlan.git
+cd CalmPlan
 npm install
 cp .env.example .env   # fill in your own Supabase project keys
 npm run dev
 ```
 
-Live demo: https://cognisync-guardian.akhilesh-samantaray.workers.dev/
+Live demo: <https://calmplan.akhilesh-samantaray.workers.dev/>
 

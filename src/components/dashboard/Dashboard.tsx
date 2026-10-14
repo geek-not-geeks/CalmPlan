@@ -133,7 +133,7 @@ export function Dashboard() {
     <div className="space-y-6 p-4">
       <header>
         <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">
-          CogniSync
+          CalmPlan
         </p>
         <h1 className="mt-1 text-2xl font-semibold text-foreground">
           {greeting}, {firstName}
