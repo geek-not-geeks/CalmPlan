@@ -43,7 +43,7 @@ export interface TasksRow {
   deadline: string | null;
   status: TaskStatus;
   is_governor_locked: boolean;
-  /** Student's self-rated confidence (1-5) of completing this task, set at creation. Core input to the predictive model — see /analysis. */
+  /** Student's self-rated confidence (1-5) of completing this task, set at creation. Core input to the predictive model — see docs/METHODOLOGY.md. */
   confidence_rating: number | null;
   /** Timestamp of actual completion; null while open. */
   completed_at: string | null;
@@ -82,7 +82,7 @@ export interface BurnoutSnapshotsRow {
 }
 
 /** Row shape for the confidence_completion_analysis view — the export-ready
- * join used by /analysis/validate_burnout_model.py */
+ * join intended for offline validation of the burnout model. */
 export interface ConfidenceCompletionAnalysisRow {
   user_id: string;
   task_id: string;
@@ -124,8 +124,12 @@ export interface Database {
           | "completed_at"
           | "actual_effort_minutes"
           | "self_reported_success"
+          | "burnout_index_at_creation"
+          | "created_at"
         > & {
           id?: string;
+          burnout_index_at_creation?: number | null;
+          created_at?: string;
           status?: TaskStatus;
           is_governor_locked?: boolean;
           raw_text?: string | null;
