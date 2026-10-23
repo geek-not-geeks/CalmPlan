@@ -93,7 +93,7 @@ npm test                  # 26 unit tests
 
 ```
 src/lib/        burnout, governor and statistics engines (+ __tests__)
-src/routes/     file-based routes (dashboard, calendar, sandbox, auth, ...)
+src/routes/   m  file-based routes (dashboard, calendar, sandbox, auth, ...)
 src/components/ UI components
 supabase/       database migrations
 docs/           methodology and validation status
