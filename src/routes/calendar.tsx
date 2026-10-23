@@ -11,7 +11,7 @@ import type { DifficultyLevel, EffortSize, TasksRow } from "@/types/database.typ
 export const Route = createFileRoute("/calendar")({
   head: () => ({
     meta: [
-      { title: "Calendar — CogniSync" },
+      { title: "Calendar — CalmPlan" },
       {
         name: "description",
         content: "Your workload laid out by day, not just crammed into today.",

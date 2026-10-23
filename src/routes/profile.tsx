@@ -13,7 +13,7 @@ import { SecuritySettingsCard } from "@/components/profile/SecuritySettingsCard"
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "Profile — CogniSync" },
+      { title: "Profile — CalmPlan" },
       { name: "description", content: "Account, calibration preferences, and settings." },
     ],
   }),

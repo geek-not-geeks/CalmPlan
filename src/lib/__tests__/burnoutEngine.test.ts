@@ -14,7 +14,7 @@ describe("calculateBurnoutTier", () => {
   it("enters amber tier once trailing sleep average drops below 6h, even with fine 'today' numbers", () => {
     const result = calculateBurnoutTier([4, 4, 4, 4], [5, 5, 5, 5], 7, 240, 360);
     expect(result.tier).toBe("amber");
-    expect(result.actionTaken).toMatch(/48h/);
+    expect(result.actionTaken).toMatch(/No restrictions/);
   });
 
   it("forces red tier when clamped score crosses 75, and floors the reported score at 80", () => {

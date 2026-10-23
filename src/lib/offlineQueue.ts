@@ -22,7 +22,7 @@ export type QueueEntry =
 
 export type QueueStatus = "idle" | "syncing" | "offline" | "error";
 
-const KEY = "cognisync.pending_mutations";
+const KEY = "calmplan.pending_mutations";
 const queueListeners = new Set<(entries: QueueEntry[]) => void>();
 const statusListeners = new Set<(status: QueueStatus) => void>();
 

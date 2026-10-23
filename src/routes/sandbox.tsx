@@ -10,17 +10,17 @@ import type { BurnoutTier } from "@/types/database.types";
 export const Route = createFileRoute("/sandbox")({
   head: () => ({
     meta: [
-      { title: "60-Second Sandbox — CogniSync" },
+      { title: "60-Second Sandbox — CalmPlan" },
       {
         name: "description",
         content:
-          "Drag sleep and energy sliders to watch the CogniSync Governor rebuild a burnout-safe study schedule in real time.",
+          "Drag sleep and energy sliders to watch the CalmPlan Governor rebuild a burnout-safe study schedule in real time.",
       },
-      { property: "og:title", content: "60-Second Sandbox — CogniSync" },
+      { property: "og:title", content: "60-Second Sandbox — CalmPlan" },
       {
         property: "og:description",
         content:
-          "See how the CogniSync Governor Engine protects your schedule from burnout — no signup required.",
+          "See how the CalmPlan Governor Engine protects your schedule from burnout — no signup required.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -102,7 +102,7 @@ function SandboxPage() {
       <main className="pt-safe mx-auto max-w-2xl px-5 pb-40 pt-8">
         <header className="text-center">
           <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">
-            CogniSync
+            CalmPlan
           </p>
           <h1 className="mt-2 text-2xl font-semibold text-foreground">
             Your schedule, calibrated to your body

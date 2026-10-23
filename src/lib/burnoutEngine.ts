@@ -67,7 +67,7 @@ export function calculateBurnoutTier(
       score: clampedScore,
       exactIndex,
       label: "🟡 Fatigue Accumulation",
-      actionTaken: "Non-urgent timelines shifted +48h for recovery room.",
+      actionTaken: "Fatigue building. No restrictions yet; demanding tasks lock at the red tier.",
       capacityMultiplier: 1.0,
     };
   }

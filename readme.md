@@ -1,45 +1,100 @@
 # CalmPlan
 
-A task-management system that doesn't just warn you when you're burning out — it changes your schedule for you. It tracks sleep, energy, and workload, and when burnout risk crosses a threshold, it caps how much new work you can take on, locks demanding tasks until you're in better shape, and pushes deadlines back on its own instead of leaving that decision to you.
+**A student task manager that acts on burnout instead of just reporting it.**
 
-I built this because every wellbeing app I'd used did the same useless thing: show a red bar and leave you to ignore it. I wanted something that actually governed the schedule instead of just reporting on it.
+CalmPlan tracks sleep, energy and workload, and when the load becomes unsustainable it
+changes the schedule: it halves daily study capacity and postpones demanding tasks until
+recovery improves. A second module tests whether a student's own confidence ratings actually
+predict whether they finish their tasks.
 
-## Why confidence, specifically
+**Live demo:** <https://calmplan.akhilesh-samantaray.workers.dev/>
 
-Out of everything I could have tracked, I picked self-reported task confidence because it's the one signal you can measure before the work even starts. I'd watched this gap before, in a completely different setting: someone telling me "I'm fine" right before an exam, when what actually happened on the page said otherwise. I wanted to know whether a model could catch that same mismatch — between how sure someone says they are and how things actually turn out — before the day is over, not after.
+> CalmPlan is a scheduling tool, not a medical or clinical product. "Burnout" means a
+> heuristic fatigue-and-overload index. See [Methodology and validation status](docs/METHODOLOGY.md).
 
 ## What it does
 
-- Models burnout risk from sleep, energy, and workload data, recalculated as the user logs each day
-- At high burnout, the scheduler actively intervenes: caps how many new tasks can be added, locks the most demanding tasks until burnout drops, and automatically pushes deadlines back rather than leaving the user to decide
-- Runs a from-scratch logistic regression module that checks whether a user's stated confidence on a task actually predicts whether they complete it
-- Feeds real usage data back into the system over time, so later scheduling decisions are informed by what actually happened, not just what was predicted at the start
-- Full-stack web app: React/TypeScript frontend, Supabase for auth and data storage, deployed on Cloudflare Workers
+- **Burnout index.** A formula over trailing study hours, sleep, current energy and planned
+  workload produces a 0–100 score and one of three tiers: sustainable, amber, red.
+- **The Governor.** In the red tier, daily capacity is multiplied by 0.5. In the red tier, or
+  when sleep is under 5 h or energy is 3 or lower, demanding tasks are removed from today's
+  schedule and shown as postponed with a stated reason. Work is split into 25 / 50-minute
+  blocks with recovery breaks.
+- **Confidence vs. completion.** Students rate confidence (1–5) when creating a task. Once
+  there are at least 10 logged outcomes, a from-scratch logistic regression and a correlation
+  test, both run in the browser on that student's own data, check whether confidence (and
+  burnout level at creation) predicts completion. Below 10 observations the app says it does
+  not know yet.
+- **Also included:** a calendar view, syllabus / whiteboard OCR import (Gemini), an offline
+  mutation queue that syncs when back online, and a no-signup 60-second sandbox where you drag
+  sleep and energy sliders and watch the Governor rebuild the schedule.
 
-## How it's built
+## Why confidence?
 
-**The burnout model.** Each day, the user logs sleep, a self-rated energy level, and their current workload. These three feed a running burnout score rather than a one-off reading, so a single bad night doesn't immediately flag the user as burned out — it's the trend that matters. Once the score crosses a set threshold, the system moves from passive tracking into active governance.
+Of the signals I could track, self-reported confidence is the one available *before* a task
+starts. I chose it because I had seen the gap between "I'm fine" and what actually happens
+once the work begins, and wanted to test whether a model could notice that gap for real.
 
-**The scheduling governor.** This is the part that makes the project more than a dashboard. Instead of a warning banner, crossing the burnout threshold directly changes what the user can do: new tasks above a capacity limit can't be added, tasks tagged as demanding get locked (greyed out and non-interactive) until burnout eases, and deadlines on flexible tasks get pushed back automatically. The intent was to remove the moment where a stressed person has to make a good decision about their own workload — the system makes it for them instead.
+## How it works
 
-**The logistic regression module.** Built from scratch rather than pulled from a library, so I could actually understand what the model was doing rather than treat it as a black box. Before starting a task, the user rates their confidence; the model learns whether that rating actually predicts completion, using real logged outcomes as training signal. It's an ongoing, small-sample model by nature — it only gets more useful the longer the app is actually used, which is also its biggest current limitation (see below).
+| Piece | File | Nature |
+|---|---|---|
+| Burnout index | `src/lib/burnoutEngine.ts` | Hand-set formula and thresholds |
+| Governor | `src/lib/governorEngine.ts` | Rule-based scheduling |
+| Correlation + logistic regression + k-fold CV | `src/lib/predictiveAnalytics.ts` | Statistics written from scratch, no ML library |
+| Per-user personalisation | `src/lib/personalizationEngine.ts` | Applies the above once n ≥ 10 |
+| Data model + analysis view | `supabase/migrations/` | Postgres on Supabase (see the schema note under Honest status) |
 
-## What's missing
+**Stack:** React 19, TypeScript, TanStack Start / Router / Query, Tailwind v4, Supabase
+(auth + Postgres), Nitro on Cloudflare Workers, Vitest.
 
-- No long-term view of burnout trends — the system reacts to current state but doesn't yet show the user how their burnout has moved over weeks or months
-- The logistic regression model is trained on usage data as it comes in, so early on, with few logged tasks, its predictions are naturally less reliable — this improves over time but isn't solved yet
-- No mobile push notifications — the governor's interventions are only visible when the user opens the app
-- Scheduling thresholds are currently fixed rather than personalized per user, so what counts as "high burnout" doesn't yet adapt to an individual's baseline
+## Honest status
 
-## Running it
+- The burnout weights and thresholds are my own judgement and **have not been validated
+  against outcome data**.
+- The confidence model is implemented and unit-tested, but **has not yet been evaluated on a
+  multi-user dataset**, so this repo makes no claim that confidence predicts completion. The
+  [planned validation protocol](docs/METHODOLOGY.md#4-planned-validation-protocol) describes how
+  I intend to test it.
+- Postponing a task removes it from today's schedule; it does not change the stored deadline.
+- Thresholds are the same for every user; there is no per-user baseline yet.
+- No push notifications, and no long-term burnout trend view yet.
+- **Schema gap:** `supabase/migrations/` holds only the migration that added the prediction
+  tables and view. The base tables (`tasks`, `profiles`, `daily_calibrations`) were created in
+  the Supabase dashboard and are not yet exported here, so a fresh database cannot be fully
+  reproduced from this repo alone. Exporting them (`supabase db dump --schema public`) is the
+  next cleanup.
 
-```
+## Run it locally
+
+Requires Node 20+ and a free [Supabase](https://supabase.com) project.
+
+```bash
 git clone https://github.com/geek-not-geeks/CalmPlan.git
 cd CalmPlan
 npm install
-cp .env.example .env   # fill in your own Supabase project keys
-npm run dev
+cp .env.example .env      # add your Supabase URL and anon key
+# schema: see the schema gap noted under "Honest status"
+npm run dev               # http://localhost:8080
+npm test                  # 26 unit tests
 ```
 
+`GEMINI_API_KEY` is only needed for OCR import and is read on the server.
 
+## Deploying to Cloudflare Workers
 
+1. Connect the repo in Workers & Pages and name the Worker `calmplan`.
+2. Build command: `npm run build`. Deploy command: `npx wrangler deploy`.
+3. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as **build** variables (Vite inlines
+   them at build time) and `GEMINI_API_KEY` as a Worker secret.
+4. In Supabase, add the Worker URL under Authentication → URL Configuration.
+
+## Project layout
+
+```
+src/lib/        burnout, governor and statistics engines (+ __tests__)
+src/routes/   m  file-based routes (dashboard, calendar, sandbox, auth, ...)
+src/components/ UI components
+supabase/       database migrations
+docs/           methodology and validation status
+```

@@ -35,7 +35,8 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error: rawError, reset }: { error: unknown; reset: () => void }) {
+  const error = rawError instanceof Error ? rawError : new Error(String(rawError));
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -78,23 +79,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "CogniSync" },
+      { title: "CalmPlan" },
       {
         name: "description",
         content:
-          "Your daily cognitive load and energy-aware task manger.",
+          "Your daily cognitive load and energy-aware task manager.",
       },
-      { name: "author", content: "CogniSync" },
-      { property: "og:title", content: "CogniSync" },
+      { name: "author", content: "CalmPlan" },
+      { property: "og:title", content: "CalmPlan" },
       {
         property: "og:description",
         content:
-          "Your daily cognitive load and energy-aware task manger.",
+          "Your daily cognitive load and energy-aware task manager.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "CogniSync" },
-      { name: "twitter:description", content: "Your daily cognitive load and energy-aware task manger." },
+      { name: "twitter:title", content: "CalmPlan" },
+      { name: "twitter:description", content: "Your daily cognitive load and energy-aware task manager." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

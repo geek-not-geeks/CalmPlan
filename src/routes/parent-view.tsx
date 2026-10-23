@@ -12,7 +12,7 @@ import type { DailyCalibrationsRow } from "@/types/database.types";
 export const Route = createFileRoute("/parent-view")({
   head: () => ({
     meta: [
-      { title: "Parent View — CogniSync" },
+      { title: "Parent View — CalmPlan" },
       {
         name: "description",
         content:
@@ -88,7 +88,7 @@ function ParentDashboard() {
       <header className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">
-            CogniSync
+            CalmPlan
           </p>
           <h1 className="mt-1 text-2xl font-semibold text-foreground">
             Parent View

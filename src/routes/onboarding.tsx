@@ -10,8 +10,8 @@ import type { UserRole, UsersRow } from "@/types/database.types";
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
     meta: [
-      { title: "Welcome — CogniSync" },
-      { name: "description", content: "Set up your CogniSync profile." },
+      { title: "Welcome — CalmPlan" },
+      { name: "description", content: "Set up your CalmPlan profile." },
     ],
   }),
   component: OnboardingPage,

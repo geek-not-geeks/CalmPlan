@@ -5,7 +5,7 @@ import { IngestionHub } from "@/components/ingestion/IngestionHub";
 export const Route = createFileRoute("/add-task")({
   head: () => ({
     meta: [
-      { title: "Add Task — CogniSync" },
+      { title: "Add Task — CalmPlan" },
       { name: "description", content: "Ingest tasks via text, camera OCR, or document upload." },
     ],
   }),

@@ -64,7 +64,7 @@ export function PersonalizationPanel({ userId }: Props) {
             {insight.observationsNeeded} logged tasks
           </p>
           <p className="mt-1 text-xs text-text-secondary">
-            CogniSync is using the general burnout heuristic for everyone until
+            CalmPlan is using the general burnout heuristic for everyone until
             you've logged {insight.observationsNeeded} tasks with a confidence
             rating. After that, it starts checking whether your own confidence
             actually predicts whether you finish — not before.

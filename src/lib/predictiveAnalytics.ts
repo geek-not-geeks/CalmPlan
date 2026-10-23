@@ -1,7 +1,7 @@
 /**
  * predictiveAnalytics.ts
  *
- * This module is the actual empirical core of CogniSync Guardian: it takes
+ * This module is the actual empirical core of CalmPlan: it takes
  * logged (confidence, completion, burnout context) observations and answers
  * two concrete questions with real statistics, not vibes:
  *
@@ -21,7 +21,7 @@
  * This module does NOT prove the burnoutEngine.ts weights (35.0, 14.0, 6.5,
  * etc.) are correct. It gives you the tool to check whether they *should*
  * be trusted, once real data exists. Do not claim validation you haven't
- * run. See /analysis/README.md for the full methodology.
+ * run. See docs/METHODOLOGY.md for the full methodology.
  */
 
 export interface Observation {

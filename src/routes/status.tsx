@@ -19,7 +19,7 @@ import type {
 export const Route = createFileRoute("/status")({
   head: () => ({
     meta: [
-      { title: "Status — CogniSync" },
+      { title: "Status — CalmPlan" },
       { name: "description", content: "Active workload and archived task history." },
     ],
   }),
