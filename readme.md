@@ -76,7 +76,7 @@ npm install
 cp .env.example .env      # add your Supabase URL and anon key
 # schema: see the schema gap noted under "Honest status"
 npm run dev               # http://localhost:8080
-npm test                  # 26 unit tests
+npm test                  # 27 unit tests
 ```
 
 `GEMINI_API_KEY` is only needed for OCR import and is read on the server.

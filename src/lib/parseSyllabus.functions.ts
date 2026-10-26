@@ -25,7 +25,7 @@ const PROMPT =
   "You are an expert academic executive assistant. Analyze this syllabus, whiteboard scan, or raw text. Extract all distinct homework assignments, exams, or study tasks into structured action items. Keep titles under 200 characters. If a deadline is not stated, set deadline to null. Also return an overall extraction confidence between 0 and 1.";
 
 export const parseSyllabus = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => InputSchema.parse(input))
+  .validator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }) => {
     if (!data.imageBase64 && !data.rawText) {
       return { ok: false as const, reason: "No image payload or text string provided." };
