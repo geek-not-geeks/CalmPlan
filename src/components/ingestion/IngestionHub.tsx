@@ -7,6 +7,8 @@ import { BatchOCRReviewDrawer } from "@/components/modals/BatchOCRReviewDrawer";
 import { QuickTextInput } from "@/components/ingestion/QuickTextInput";
 import { BimodalFallback } from "@/components/ingestion/BimodalFallback";
 import { parseOcrAsset } from "@/lib/ocrParse";
+import { useQuery } from "@tanstack/react-query";
+import { getAiStatus } from "@/lib/parseSyllabus.functions";
 import { extractDateFromTitle } from "@/utils/dateParser";
 import type { ParsedTaskPayload } from "@/types/task";
 
@@ -46,11 +48,20 @@ export function IngestionHub() {
   const [drawerWarning, setDrawerWarning] = useState<string | null>(null);
   const [parsing, setParsing] = useState(false);
 
+  // AI import is enabled per-deployment: available as soon as GEMINI_API_KEY
+  // is set as a Worker secret. Until then, the options stay visibly gated.
+  const { data: aiStatus } = useQuery({
+    queryKey: ["ai_status"],
+    queryFn: () => getAiStatus(),
+    staleTime: 1000 * 60 * 10,
+  });
+  const aiReady = aiStatus?.configured === true;
+
   const handleComingSoon = (e: React.MouseEvent) => {
     e.preventDefault();
-    toast("Coming Soon 🚀", {
+    toast("Not available yet", {
       description:
-        "AI Whiteboard Scanning and File Uploads are currently rolling out to early access.",
+        "Whiteboard scanning and file upload need AI import, which isn't switched on for this deployment yet. Quick Text works now.",
     });
   };
 
@@ -199,7 +210,7 @@ export function IngestionHub() {
 
         <div className="flex flex-col gap-6">
           {OPTIONS.map(({ id, icon: Icon, title, subtitle }) => {
-            const comingSoon = id !== "quick-text";
+            const comingSoon = id !== "quick-text" && !aiReady;
             return (
               <button
                 key={id}
@@ -210,7 +221,7 @@ export function IngestionHub() {
                     handleComingSoon(e);
                     return;
                   }
-                  setMode("quick-text");
+                  setMode(id === "quick-text" ? "quick-text" : id === "camera-ocr" ? "camera" : "upload");
                 }}
                 style={
                   comingSoon
