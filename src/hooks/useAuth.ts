@@ -8,6 +8,10 @@ interface AuthState {
   loading: boolean;
 }
 
+// Every component that calls useAuth subscribes to auth changes; seed the
+// public.users row once per user per page load rather than once per subscriber.
+const seededUserIds = new Set<string>();
+
 export function useAuth(): AuthState {
   const [state, setState] = useState<AuthState>({
     session: null,
@@ -44,7 +48,8 @@ export function useAuth(): AuthState {
       // Foreign Key Failsafe: guarantee a public.users row exists so task
       // inserts never violate tasks_user_id_fkey.
       const u = session?.user;
-      if (u) {
+      if (u && !seededUserIds.has(u.id)) {
+        seededUserIds.add(u.id);
         void (async () => {
           try {
             const meta = u.user_metadata as { display_name?: string } | null;
