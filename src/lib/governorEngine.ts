@@ -33,6 +33,23 @@ export interface GovernorSchedule {
   statusMessage: string | null;
 }
 
+/**
+ * Pick which tasks are allowed to occupy today's capacity: every pending task,
+ * plus tasks completed today (that work really was done today, so it still
+ * counts against the budget). Tasks completed on earlier days must NOT be fed
+ * to the scheduler — they sort first by their old deadlines, fill the whole
+ * daily budget, and are then hidden as "completed", leaving 0m of focus.
+ */
+export function selectSchedulableTasks<
+  T extends { status: string | null; completed_at?: string | null },
+>(tasks: T[], isToday: (iso: string) => boolean): T[] {
+  return tasks.filter(
+    (t) =>
+      t.status === "pending" ||
+      (t.status === "completed" && !!t.completed_at && isToday(t.completed_at)),
+  );
+}
+
 export const GUARDRAIL_REASON =
   "Postponed by Biometric Guardrail due to low recovery baseline.";
 
