@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, Coffee, Timer, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { localDateString } from "@/utils/authErrors";
 import { computePersonalizationInsight } from "@/lib/personalizationEngine";
-import { generateDailySchedule } from "@/lib/governorEngine";
+import { generateDailySchedule, selectSchedulableTasks } from "@/lib/governorEngine";
 import { PostponedTray } from "@/components/dashboard/PostponedTray";
+import { CompletionRatingModal } from "@/components/modals/CompletionRatingModal";
 import type { EffortSize, DifficultyLevel, TasksRow } from "@/types/database.types";
 
 interface Props {
@@ -37,7 +38,7 @@ export function GovernorTimeline({
   burnoutScore = 0,
 }: Props) {
   const qc = useQueryClient();
-  const shiftedRef = useRef<string>("");
+  const [ratingBlock, setRatingBlock] = useState<{ taskId: string; title: string } | null>(null);
 
   const { data: tasks, isLoading } = useQuery({
     queryKey: ["tasks", userId, "timeline"],
@@ -101,7 +102,10 @@ export function GovernorTimeline({
   const schedule = useMemo(
     () =>
       generateDailySchedule(
-        (tasks ?? []).map((t) => ({
+        selectSchedulableTasks(
+          tasks ?? [],
+          (iso) => localDateString(new Date(iso)) === localDateString(),
+        ).map((t) => ({
           id: t.id,
           title: t.title,
           effortSize: t.effort_size,
@@ -141,16 +145,29 @@ export function GovernorTimeline({
   );
 
   const complete = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (params: {
+      id: string;
+      selfReportedSuccess: number;
+      actualEffortMinutes: number | null;
+    }) => {
+      // completed_at + the post-task rating are what "Completed Today", the
+      // archive, and the confidence-vs-completion model all read.
       const { error } = await supabase
         .from("tasks")
-        .update({ status: "completed" } as never)
-        .eq("id", id);
+        .update({
+          status: "completed",
+          completed_at: new Date().toISOString(),
+          self_reported_success: params.selfReportedSuccess,
+          actual_effort_minutes: params.actualEffortMinutes,
+        } as never)
+        .eq("id", params.id)
+        .eq("user_id", userId);
       if (error) throw error;
-      return id;
+      return params.id;
     },
     onSuccess: async () => {
       toast.success("Task completed");
+      setRatingBlock(null);
       await qc.invalidateQueries({ queryKey: ["tasks"] });
       await qc.invalidateQueries({ queryKey: ["profile"] });
       await qc.invalidateQueries({ queryKey: ["tasks_count", userId, "pending"] });
@@ -161,30 +178,9 @@ export function GovernorTimeline({
   });
 
 
-  // Background deadline shift for governor-overridden tasks (+24h)
-  const overriddenKey = schedule.overriddenTaskIds.join(",");
-  useEffect(() => {
-    if (!overriddenKey || shiftedRef.current === overriddenKey) return;
-    shiftedRef.current = overriddenKey;
-    const ids = overriddenKey.split(",");
-    const byId = new Map((tasks ?? []).map((t) => [t.id, t]));
-
-    void (async () => {
-      for (const id of ids) {
-        const task = byId.get(id);
-        if (!task) continue;
-        const base = task.deadline ? new Date(task.deadline) : new Date();
-        if (Number.isNaN(base.getTime())) continue;
-        const shifted = new Date(base.getTime() + 24 * 60 * 60 * 1000);
-        await supabase
-          .from("tasks")
-          .update({ deadline: shifted.toISOString() } as never)
-          .eq("id", id)
-          .eq("user_id", userId);
-      }
-      await qc.invalidateQueries({ queryKey: ["tasks", userId] });
-    })();
-  }, [overriddenKey, tasks, userId, qc]);
+  // Postponing only removes a task from today's schedule; the stored deadline
+  // is never rewritten. (An earlier version pushed deadlines +24h on every
+  // page load, so postponed deadlines drifted forward indefinitely.)
 
   if (isLoading) {
     return <div className="h-24 animate-pulse rounded-3xl bg-surface/60 shadow-3d-base" />;
@@ -276,7 +272,7 @@ export function GovernorTimeline({
               </div>
               <button
                 type="button"
-                onClick={() => complete.mutate(block.taskId)}
+                onClick={() => setRatingBlock({ taskId: block.taskId, title: block.title })}
                 disabled={complete.isPending}
                 aria-label={`Mark ${block.title} complete`}
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-700 bg-slate-deep text-text-secondary transition-all hover:border-accent-mint hover:text-accent-mint active:scale-95 disabled:opacity-50"
@@ -310,6 +306,16 @@ export function GovernorTimeline({
       )}
 
       <PostponedTray blocks={schedule.postponedBlocks} />
+
+      <CompletionRatingModal
+        open={ratingBlock !== null}
+        taskTitle={ratingBlock?.title ?? ""}
+        onClose={() => setRatingBlock(null)}
+        onSubmit={async (result) => {
+          if (!ratingBlock) return;
+          await complete.mutateAsync({ id: ratingBlock.taskId, ...result });
+        }}
+      />
     </div>
   );
 }
