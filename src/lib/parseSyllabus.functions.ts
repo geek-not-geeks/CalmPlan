@@ -82,3 +82,12 @@ export const parseSyllabus = createServerFn({ method: "POST" })
       return { ok: false as const, reason: message };
     }
   });
+
+/**
+ * Lets the client know whether AI import is configured on this deployment
+ * (GEMINI_API_KEY present as a Worker secret) without exposing the key.
+ * Scan Whiteboard / Upload File are only offered when this returns true.
+ */
+export const getAiStatus = createServerFn({ method: "GET" }).handler(async () => {
+  return { configured: !!process.env.GEMINI_API_KEY };
+});
