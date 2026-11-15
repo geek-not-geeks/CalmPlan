@@ -52,7 +52,9 @@ export const parseSyllabus = createServerFn({ method: "POST" })
 
     try {
       const { output } = await generateText({
-        model: gemini("gemini-2.5-flash-lite"),
+        // gemini-2.5-flash-lite was scheduled for shutdown on the Gemini API
+        // (Oct 2026). Override with a GEMINI_MODEL Worker variable if needed.
+        model: gemini(process.env.GEMINI_MODEL || "gemini-3.5-flash-lite"),
         output: Output.object({ schema: ResultSchema }),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         messages: [{ role: "user", content: content as any }],
